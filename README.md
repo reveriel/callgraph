@@ -1,5 +1,24 @@
 # Call Graph Generator
+<!-- TOC -->
 
+- [Call Graph Generator](#call-graph-generator)
+    - [设计](#设计)
+    - [评价](#评价)
+    - [难点](#难点)
+    - [相关工具](#相关工具)
+        - [相关工具简介.](#相关工具简介)
+            - [Egypt](#egypt)
+            - [ncc](#ncc)
+            - [KcacheGrind](#kcachegrind)
+            - [Graphviz](#graphviz)
+            - [CodeViz](#codeviz)
+            - [doxygen](#doxygen)
+            - [Understand](#understand)
+            - [tceetree](#tceetree)
+            - [DMS Software Reengineering Toolkit](#dms-software-reengineering-toolkit)
+            - [Astrée](#astrée)
+
+<!-- /TOC -->
 
 
 ## 设计
@@ -57,7 +76,7 @@ ref :  [Tools to get a pictorial function call graph of code | stackoverflow](ht
 ### 相关工具简介.
 
 
-####  [Egypt](http://www.gson.org/egypt/) (free software)
+####  Egypt
 
 Egypt takes advantage of GCC's capability to dump an intermediate representation of the program being compiled into a file (a RTL file); this file is much easier to extract information from than a C source file. Egypt extracts information about function calls from the RTL file and massages it into the format used by Graphviz.
 
@@ -66,7 +85,7 @@ Egypt takes advantage of GCC's capability to dump an intermediate representation
 
 不支持跨文件. 因为 gcc 生成的 RTL 是单文件的. gcc 不会链接 RTL. 链接是 ld 的事(吧).
 
-#### [ncc](http://students.ceid.upatras.gr/~sxanth/ncc/)
+#### ncc
 
 ncc is a compiler that produces program analysis information. ncc is a decent replacement of cflow and cscope able to analyse any program using the gcc compiler. The program also includes a graphical call-graph navigator and source browser which is extremely practical for hacking and comprehending large projects.
 
@@ -83,7 +102,7 @@ the following things are reported :
 因为是一个 compiler, 自己实现的前端. 而且很久没人维护, 估计在实际使用是会有 C 的语法问题.
 
 
-#### [KcacheGrind](https://kcachegrind.github.io/html/Home.html) (GPL)
+#### KcacheGrind
 
 The profiling tool **Callgrind** and the profile data visualization **KCachegrind**
 
@@ -96,14 +115,14 @@ Callgrind 是 Valgrind 的一部分. Callgrind
 
 
 
-#### [Graphviz](http://www.graphviz.org/) (CPL)
+#### Graphviz
 
 note: 在图较大的时候, 使用  `neato` 比 `dot` 好. graphviz 提供了 C API `<gvc.h>`.
 
 没有找到 call graph 功能.
 
 
-#### [CodeViz](https://github.com/petersenna/codeviz)(GPL)
+#### CodeViz
 
 
 Perl 脚本, 大约几千行代码. C/C++ 支持.
@@ -116,7 +135,7 @@ Perl 脚本, 大约几千行代码. C/C++ 支持.
 2. objdump 处理二进制文件.
 
 
-#### [doxygen](http://www.stack.nl/~dimitri/doxygen/)
+#### doxygen
 
 You can configure doxygen to extract the code structure from undocumented source files. This is very useful to quickly find your way in large source distributions. Doxygen can also visualize the relations between the various elements by means of include dependency graphs, inheritance diagrams, and collaboration diagrams, which are all generated automatically.
 
@@ -135,17 +154,16 @@ You can configure doxygen to extract the code structure from undocumented source
 
 Note : The completeness (and correctness) of the call graph depends on the doxygen code parser which is not perfect.
 
-#### [Understand](https://scitools.com/features/)
+#### Understand
 
 
 
+#### tceetree
 
-- [tceetree](https://sourceforge.net/projects/tceetree/)
-- [DMS Software Reengineering Toolkit](http://www.semanticdesigns.com/Products/DMS/DMSToolkit.html)
-- [Astrée](https://www.absint.com/astree/index.htm)
+#### DMS Software Reengineering Toolkit
+
+#### Astrée
 
 
-
-### doxygen.
 
 
