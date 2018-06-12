@@ -2,9 +2,10 @@
 <!-- TOC -->
 
 - [Call Graph Generator](#call-graph-generator)
+    - [Call Graph](#call-graph)
     - [设计](#设计)
     - [评价](#评价)
-    - [难点](#难点)
+    - [问题](#问题)
     - [相关工具](#相关工具)
         - [相关工具简介.](#相关工具简介)
             - [Egypt](#egypt)
@@ -14,16 +15,23 @@
             - [CodeViz](#codeviz)
             - [doxygen](#doxygen)
             - [Understand](#understand)
-            - [tceetree](#tceetree)
+            - [tceetree/CScope](#tceetreecscope)
             - [DMS Software Reengineering Toolkit](#dms-software-reengineering-toolkit)
-            - [Astrée](#astrée)
+            - [Smatch](#smatch)
+            - [cflow](#cflow)
+- [](#)
+    - [](#-1)
 
 <!-- /TOC -->
 
+## Call Graph
+
+构建函数调用图的目的可以是作为后面的过程间优化的基础, 或者是帮助程序员理解程序.
 
 ## 设计
 
 - 文件(module/file)
+- [类(Class)]
 - 函数(function)
 - 行(line)
 
@@ -41,19 +49,46 @@
 
 交互式, 点击节点可以展开. File > Func > Line.
 
+class 对象的 method 组织?
+
 
 ## 评价
 
 在不同的编程风格, 设计模式下的效果.
 
-## 难点
+## 问题
+
+- presentation: huge call graph
+
+  函数
 
 - indirect call, function pointer
+
+  对于通过函数指针的函数调用需要准确的指针分析. 指针分析除了在构建调用图上的问题上会用到, 对于编译器内部的各种优化也是很有用的.
+  在调用图问题上, 指针分析的特别之处在于跨模块的分析. (具体一点?)
+
 - reflection, dynamic library
+
+  语言支持的动态调用, 其被调用的函数的函数名可能是程序中的一个字符串变量, 难以在运行前确定.
+
 - C++ virtual function calls
+
+  同样是指针分析的问题.
+
 - build system
-- inline function, macro
+
+  大型程序
+
+- inline function
+
+  内联函数可能根本就
+
+- macro function 的表示, 条件编译
+
+  C 程序中看起来是函数的, 实际调用的是一段宏. 但是对于用户来说, 宏和真正的函数是看不出区别的, 在思考时一般也是将这样的宏看做函数.
+
 - C++ template
+
 
 
 ## 相关工具
@@ -66,10 +101,11 @@ C project 函数调用图生成.
 - [Graphviz](http://www.graphviz.org/) (CPL)
 - [CodeViz](https://github.com/petersenna/codeviz)(GPL)
 - [doxygen](http://www.stack.nl/~dimitri/doxygen/)
-- [Understand](https://scitools.com/features/)
-- [tceetree](https://sourceforge.net/projects/tceetree/)
-- [DMS Software Reengineering Toolkit](http://www.semanticdesigns.com/Products/DMS/DMSToolkit.html)
-- [Astrée](https://www.absint.com/astree/index.htm)
+- [Understand](https://scitools.com/features/)(Commercial)
+- [tceetree/cscope](https://sourceforge.net/projects/tceetree/)
+- [DMS Software Reengineering Toolkit](http://www.semanticdesigns.com/Products/DMS/DMSToolkit.html)(commercial)
+- [GNU cflow](http://www.gnu.org/s/cflow/)
+
 
 ref :  [Tools to get a pictorial function call graph of code | stackoverflow](https://stackoverflow.com/questions/517589/tools-to-get-a-pictorial-function-call-graph-of-code)
 
@@ -98,8 +134,6 @@ the following things are reported :
     - pointer to function assigned values
     - use of global variables
     - use of members of structures
-
-因为是一个 compiler, 自己实现的前端. 而且很久没人维护, 估计在实际使用是会有 C 的语法问题.
 
 
 #### KcacheGrind
@@ -156,14 +190,69 @@ Note : The completeness (and correctness) of the call graph depends on the doxyg
 
 #### Understand
 
+[Understand, Visualize Your Code](https://scitools.com/feature-category/graphing/)
 
+功能介绍页面 [graphing](https://scitools.com/feature-category/graphing/) 里面
+没有提到 call graph.
 
-#### tceetree
+#### tceetree/CScope
+
+[tceetree](https://sourceforge.net/p/tceetree/wiki/Home/). The purpose of the
+project is generating a function call tree for a software application written
+in C. This utility takes as input an uncompressed
+[CScope](http://cscope.sourceforge.net/) output file. With a few options, an
+output DOT language file can be generated.
+
+A fuzzy parser used by cscope supports C, but is flexible enough to be useful for C++ and Java.
+cscope outputs a function's caller and callee. tceetree 完全就是读取这个 output
+然后输出 dot.
+
+cscope 的原理看起来只是单纯的字符串匹配.
+
+ref:
+ [Bug 1508830 - cscope fails to find functions with function pointer formal parameters](https://bugzilla.redhat.com/show_bug.cgi?id=1508830)
 
 #### DMS Software Reengineering Toolkit
 
-#### Astrée
+DMS: Generalized Compiler Infrastructure
+A very simple model (see Figure below) of DMS is that of an extremely generalized compiler, having
+
+- a parser (producing compiler-like data structures capturing code),
+- a set of semantic analyzers,
+including a variety of pattern matching (using surface syntax) engines
+- a set of compiler data structure modification engines,
+including a source-to-source program transformation engine (using surface syntax)
+- and final output formatting components (converting compiler data structures back to valid source code rather than binary code),
+
+[Call Graphs](http://www.semanticdesigns.com/Products/DMS/FlowAnalysis.html)
+
+The call graph data structure is first constructed, and then a rendering step using DOT is use to display arbitrary sub graphs of the full graph to ensure that the rendered graph is of reasonable size for people to grasp. The rendered subgraph is parameterized by a root function name, call width, call depth, and a set of "stop" function names. Call depth controls how deep a chain of calls may go in the rendered graph. Call width controls how many callees are rendered for a particular function node when there are too many indirect call targets. The stop functions terminate the call graph if encountered, and are usually chosen because those functions do not contain details of interest.
 
 
+#### Smatch
+
+[Smatch](http://smatch.sourceforge.net/)
+
+
+#### cflow
+
+[document](http://www.gnu.org/software/cflow/manual/cflow.html)
+
+GNU cflow analyzes a collection of C source files and prints a graph, charting control flow within the program.
+
+The program is able to produce two kind of graphs: direct and reverse. Direct graph begins with the main function (main), and displays recursively all functions called by it. In contrast, reverse graph is a set of subgraphs, charting for each function its callers, in the reverse order. Due to their tree-like appearance, graphs can also be called trees.
+
+产生的结果是 tree 一样的形式, 可以使用 `cflow2vcg` 转换成图片.
+这里也体现了一个设计上的问题: 表达 Call Graph 是应该用树还是用图(合并相同节点)
+来表达.
+
+lex/yacc 写的 C Parser. 没有指针分析功能.
+
+##
+
+
+###
+
+[KernelGraph: Understanding the kernel in a graph](http://journals.sagepub.com/doi/pdf/10.1177/1473871617743239)
 
 
